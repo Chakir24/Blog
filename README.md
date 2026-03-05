@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Building Scalable Digital Systems — Blog Premium
 
-## Getting Started
+Blog haut de gamme, moderne et interactif inspiré de **chakir.dev** (design minimaliste) et **dyvact.com** (contenu business/tech).
 
-First, run the development server:
+## 🎨 Design
+
+- **Mode sombre par défaut** avec toggle Light/Dark animé
+- **Palette** : noir profond, blanc cassé, gris doux, accent violet/bleu
+- **Typographie** : Syne (titres) + Instrument Serif (accents)
+- **Animations** : Framer Motion (scroll, hover, micro-interactions)
+- **Glassmorphism** léger et ombres subtiles
+
+## ⚡ Fonctionnalités
+
+- ✅ Hero section impactante
+- ✅ Filtres dynamiques par catégorie (Dev, IA, Business, Architecture, Leadership)
+- ✅ Recherche instantanée avec suggestions (Ctrl+K / Cmd+K)
+- ✅ Barre de progression de lecture
+- ✅ Table des matières dynamique dans les articles
+- ✅ Temps de lecture estimé
+- ✅ Système de réactions (clap, like, bookmark)
+- ✅ Commentaires avec design propre
+- ✅ Dark/Light mode toggle
+- ✅ Newsletter premium
+- ✅ Articles recommandés
+- ✅ Page auteur avec bio et compétences
+
+## 🛠 Stack
+
+- **Frontend** : Next.js 16, React 19
+- **Styling** : TailwindCSS v4
+- **Animations** : Framer Motion
+- **Markdown** : react-markdown, remark-gfm, rehype-slug
+
+## 🚀 Démarrage
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrez [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔐 Administration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Accédez au tableau de bord admin : [http://localhost:3000/admin](http://localhost:3000/admin)
 
-## Learn More
+**Mot de passe par défaut** : `admin123`
 
-To learn more about Next.js, take a look at the following resources:
+Pour changer le mot de passe, créez un fichier `.env` :
+```
+ADMIN_PASSWORD=votre_mot_de_passe_securise
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Fonctionnalités du dashboard
+- **Articles** : Créer, modifier, supprimer des articles
+- **Commentaires** : Approuver, masquer ou supprimer les commentaires
+- **Newsletter** : Voir la liste des abonnés
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 Structure
 
-## Deploy on Vercel
+```
+src/
+├── app/
+│   ├── articles/[slug]/   # Page article avec TOC, réactions, commentaires
+│   ├── auteur/            # Page auteur
+│   ├── mentions/          # Mentions légales
+│   └── confidentialite/   # Politique de confidentialité
+├── components/
+│   ├── Header.tsx         # Nav + recherche + theme toggle
+│   ├── Hero.tsx
+│   ├── ArticlesSection.tsx # Filtres + grille articles
+│   ├── ArticleCard.tsx
+│   ├── Expertise.tsx
+│   ├── Newsletter.tsx
+│   ├── Footer.tsx
+│   ├── SearchModal.tsx    # Recherche avec suggestions
+│   ├── ReadingProgress.tsx
+│   ├── TableOfContents.tsx
+│   ├── Reactions.tsx
+│   └── Comments.tsx
+└── lib/
+    ├── data.ts           # Articles (à remplacer par API/CMS)
+    └── types.ts
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Contenu
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Les articles sont dans `src/lib/data.ts`. Pour un CMS headless ou une API Laravel :
+
+1. Remplacer les imports dans les composants
+2. Créer des routes API ou utiliser `getServerSideProps`/`generateStaticParams`
+
+## 🔧 Configuration
+
+- **Photo de profil** : Ajoutez votre image dans `public/profile.jpg` (format carré recommandé)
+- **Newsletter** : Intégrer votre service (Mailchimp, ConvertKit, etc.) dans `Newsletter.tsx`
+- **Commentaires** : Remplacer par Giscus, utterances ou votre backend
+- **Réseaux sociaux** : Mettre à jour les liens dans `Footer.tsx` et `auteur/page.tsx`
+
+## 📄 Licence
+
+Projet personnel — à adapter selon vos besoins.

@@ -1,0 +1,25 @@
+{
+  "authorName": "Manftou Hath",
+  "authorTitle": "Auteure & créatrice de contenu",
+  "profileImage": "/profile.jpg",
+  "slogan": "Réflexions · Créativité · Inspiration",
+  "siteName": "Manftou Hath",
+  "tagline": "Réflexions et idées à travers la toile",
+  "socialLinks": {
+    "facebook": "",
+    "instagram": "https://instagram.com",
+    "twitter": "https://twitter.com",
+    "gmail": "contact@example.com"
+  },
+  "adminPasswordHash": null,
+  "fontPalette": "syne",
+  "seo": {
+    "metaTitle": "Blog | Réflexions et idées à travers la toile",
+    "metaDescription": "Un espace personnel pour partager mes réflexions, mes inspirations et tout ce qui me fait vibrer. Bienvenue dans mon coin d'Internet.",
+    "metaKeywords": "blog personnel, réflexions, créativité, lifestyle, inspiration, écriture",
+    "ogImage": "",
+    "robots": "index, follow"
+  },
+  "legalMentions": "",
+  "privacyPolicy": ""
+}
