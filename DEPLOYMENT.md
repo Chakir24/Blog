@@ -10,14 +10,10 @@
 - Configuration quasi automatique pour Next.js
 - CDN global et performances élevées
 
-### ⚠️ Limitation importante : stockage
+### Stockage : Supabase (recommandé)
 
-Sur Vercel, les **fonctions serverless ont un système de fichiers éphémère**. Les écritures dans le dossier `data/` (articles, commentaires, paramètres, newsletter, uploads) **ne sont pas conservées**.
+Le blog utilise **Supabase** pour la persistance des données. Cela permet un déploiement correct sur Vercel.
 
-- **Lecture** : OK (données du build)
-- **Écriture** : perdue (nouveaux commentaires, paramètres, articles, inscriptions newsletter)
-
-**Solutions** : migrer vers une base de données (Supabase, Turso) ou utiliser Vercel Blob/KV. Pour garder l’architecture actuelle sans migration, préférer **Railway** ou **Render**.
 
 ---
 
@@ -40,18 +36,33 @@ git push -u origin main
 4. Vercel détecte Next.js : aucune config supplémentaire nécessaire
 5. Clique sur **Deploy**
 
-### 3. Variables d'environnement
+### 3. Configurer Supabase
+1. Crée un projet sur [supabase.com](https://supabase.com)
+2. Dans **SQL Editor**, exécute le contenu de `supabase/schema.sql`
+3. Dans **Storage**, crée un bucket nommé `uploads` (public)
+4. Récupère l’URL du projet et la clé **service_role** (Settings → API)
+
+### 4. Variables d'environnement
 Dans **Project Settings** → **Environment Variables** :
 
 | Variable | Description |
 |----------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL du projet Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Clé service_role (secrète) |
 | `ADMIN_PASSWORD` | Mot de passe admin |
 | `ADMIN_PASSWORD_SALT` | Sel pour le hachage (optionnel) |
 | `NEXT_PUBLIC_SITE_URL` | URL du site (ex: https://ton-blog.vercel.app) |
 | `RESEND_API_KEY` | Clé API Resend (newsletter) |
 | `NEWSLETTER_FROM_EMAIL` | Email expéditeur |
 
-### 4. Déploiement via CLI (sans GitHub)
+### 5. Migration des données existantes
+Si tu as des données dans `data/*.json`, exécute une fois :
+```bash
+npx tsx scripts/migrate-to-supabase.ts
+```
+(avec les variables Supabase dans `.env.local`)
+
+### 6. Déploiement via CLI (sans GitHub)
 ```bash
 npm i -g vercel
 vercel login
@@ -61,13 +72,9 @@ vercel --prod
 
 ---
 
-## Alternative : Railway (stockage persistant)
+## Alternative : Railway
 
-Si tu veux garder les fichiers JSON sans migrer vers une base de données :
-
-1. [railway.app](https://railway.app) → **New Project** → **Deploy from GitHub repo**
-2. Connecte ton dépôt
-3. Les fichiers dans `data/` sont conservés entre les déploiements
+Tu peux aussi déployer sur [Railway](https://railway.app). Supabase reste requis pour les données.
 
 ---
 
@@ -75,6 +82,8 @@ Si tu veux garder les fichiers JSON sans migrer vers une base de données :
 
 | Variable | Obligatoire | Description |
 |----------|-------------|-------------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Oui | URL du projet Supabase |
+| `SUPABASE_SERVICE_ROLE_KEY` | Oui | Clé service_role Supabase |
 | `ADMIN_PASSWORD` | Oui | Mot de passe du tableau de bord admin |
 | `ADMIN_PASSWORD_SALT` | Non | Sel pour le hachage |
 | `NEXT_PUBLIC_SITE_URL` | Recommandé | URL publique du site |

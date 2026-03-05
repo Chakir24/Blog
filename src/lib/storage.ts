@@ -1,23 +1,58 @@
-import { promises as fs } from 'fs';
-import path from 'path';
 import type { Article } from './types';
+import { supabase } from './supabase';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
+// --- Articles ---
+
+function rowToArticle(row: Record<string, unknown>): Article {
+  return {
+    slug: row.slug as string,
+    title: row.title as string,
+    excerpt: row.excerpt as string,
+    content: row.content as string,
+    category: row.category as string,
+    publishedAt: row.published_at as string,
+    readingTime: (row.reading_time as number) ?? 0,
+    image: row.image as string | undefined,
+    author: row.author as string,
+  };
+}
 
 export async function getArticles(): Promise<Article[]> {
-  try {
-    const filePath = path.join(DATA_DIR, 'articles.json');
-    const data = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(data);
-  } catch {
+  const { data, error } = await supabase
+    .from('articles')
+    .select('*')
+    .order('published_at', { ascending: false });
+
+  if (error) {
+    console.error('[storage] getArticles:', error.message);
     return [];
   }
+  return (data ?? []).map(rowToArticle);
 }
 
 export async function saveArticles(articles: Article[]): Promise<void> {
-  const filePath = path.join(DATA_DIR, 'articles.json');
-  await fs.writeFile(filePath, JSON.stringify(articles, null, 2), 'utf-8');
+  const rows = articles.map((a) => ({
+    slug: a.slug,
+    title: a.title,
+    excerpt: a.excerpt,
+    content: a.content,
+    category: a.category,
+    published_at: a.publishedAt,
+    reading_time: a.readingTime,
+    image: a.image ?? null,
+    author: a.author,
+  }));
+
+  const { error } = await supabase.from('articles').upsert(rows, {
+    onConflict: 'slug',
+  });
+
+  if (error) {
+    throw new Error(`Erreur lors de la sauvegarde des articles : ${error.message}`);
+  }
 }
+
+// --- Comments ---
 
 export interface Comment {
   id: string;
@@ -28,20 +63,50 @@ export interface Comment {
   approved: boolean;
 }
 
+function rowToComment(row: Record<string, unknown>): Comment {
+  return {
+    id: row.id as string,
+    articleSlug: row.article_slug as string,
+    author: row.author as string,
+    content: row.content as string,
+    date: row.date as string,
+    approved: (row.approved as boolean) ?? false,
+  };
+}
+
 export async function getComments(): Promise<Comment[]> {
-  try {
-    const filePath = path.join(DATA_DIR, 'comments.json');
-    const data = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(data);
-  } catch {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('*')
+    .order('date', { ascending: false });
+
+  if (error) {
+    console.error('[storage] getComments:', error.message);
     return [];
   }
+  return (data ?? []).map(rowToComment);
 }
 
 export async function saveComments(comments: Comment[]): Promise<void> {
-  const filePath = path.join(DATA_DIR, 'comments.json');
-  await fs.writeFile(filePath, JSON.stringify(comments, null, 2), 'utf-8');
+  const rows = comments.map((c) => ({
+    id: c.id,
+    article_slug: c.articleSlug,
+    author: c.author,
+    content: c.content,
+    date: c.date,
+    approved: c.approved,
+  }));
+
+  const { error } = await supabase.from('comments').upsert(rows, {
+    onConflict: 'id',
+  });
+
+  if (error) {
+    throw new Error(`Erreur lors de la sauvegarde des commentaires : ${error.message}`);
+  }
 }
+
+// --- Subscribers ---
 
 export interface Subscriber {
   email: string;
@@ -49,19 +114,37 @@ export interface Subscriber {
 }
 
 export async function getSubscribers(): Promise<Subscriber[]> {
-  try {
-    const filePath = path.join(DATA_DIR, 'newsletter.json');
-    const data = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(data);
-  } catch {
+  const { data, error } = await supabase
+    .from('subscribers')
+    .select('*')
+    .order('subscribed_at', { ascending: false });
+
+  if (error) {
+    console.error('[storage] getSubscribers:', error.message);
     return [];
   }
+  return (data ?? []).map((row) => ({
+    email: row.email,
+    subscribedAt: row.subscribed_at,
+  }));
 }
 
 export async function saveSubscribers(subscribers: Subscriber[]): Promise<void> {
-  const filePath = path.join(DATA_DIR, 'newsletter.json');
-  await fs.writeFile(filePath, JSON.stringify(subscribers, null, 2), 'utf-8');
+  const rows = subscribers.map((s) => ({
+    email: s.email,
+    subscribed_at: s.subscribedAt,
+  }));
+
+  const { error } = await supabase.from('subscribers').upsert(rows, {
+    onConflict: 'email',
+  });
+
+  if (error) {
+    throw new Error(`Erreur lors de la sauvegarde des abonnés : ${error.message}`);
+  }
 }
+
+// --- Categories ---
 
 export interface Category {
   id: string;
@@ -77,20 +160,29 @@ const DEFAULT_CATEGORIES: Category[] = [
 ];
 
 export async function getCategories(): Promise<Category[]> {
-  try {
-    const filePath = path.join(DATA_DIR, 'categories.json');
-    const data = await fs.readFile(filePath, 'utf-8');
-    const parsed = JSON.parse(data);
-    return Array.isArray(parsed) ? parsed : DEFAULT_CATEGORIES;
-  } catch {
+  const { data, error } = await supabase.from('categories').select('*');
+
+  if (error) {
+    console.error('[storage] getCategories:', error.message);
     return DEFAULT_CATEGORIES;
   }
+  if (!data?.length) return DEFAULT_CATEGORIES;
+  return data.map((row) => ({ id: row.id, label: row.label }));
 }
 
 export async function saveCategories(categories: Category[]): Promise<void> {
-  const filePath = path.join(DATA_DIR, 'categories.json');
-  await fs.writeFile(filePath, JSON.stringify(categories, null, 2), 'utf-8');
+  const rows = categories.map((c) => ({ id: c.id, label: c.label }));
+
+  const { error } = await supabase.from('categories').upsert(rows, {
+    onConflict: 'id',
+  });
+
+  if (error) {
+    throw new Error(`Erreur lors de la sauvegarde des catégories : ${error.message}`);
+  }
 }
+
+// --- Settings ---
 
 export interface Settings {
   authorName: string;
@@ -146,20 +238,28 @@ const DEFAULT_SETTINGS: Settings = {
 };
 
 export async function getSettings(): Promise<Settings> {
-  try {
-    const filePath = path.join(DATA_DIR, 'settings.json');
-    const data = await fs.readFile(filePath, 'utf-8');
-    const parsed = JSON.parse(data);
-    return { ...DEFAULT_SETTINGS, ...parsed };
-  } catch {
+  const { data, error } = await supabase
+    .from('settings')
+    .select('data')
+    .eq('id', 1)
+    .single();
+
+  if (error || !data?.data) {
     return DEFAULT_SETTINGS;
   }
+  return { ...DEFAULT_SETTINGS, ...(data.data as Record<string, unknown>) };
 }
 
 export async function saveSettings(settings: Partial<Settings>): Promise<Settings> {
   const current = await getSettings();
   const merged = { ...current, ...settings };
-  const filePath = path.join(DATA_DIR, 'settings.json');
-  await fs.writeFile(filePath, JSON.stringify(merged, null, 2), 'utf-8');
+
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ id: 1, data: merged }, { onConflict: 'id' });
+
+  if (error) {
+    throw new Error(`Erreur lors de la sauvegarde des paramètres : ${error.message}`);
+  }
   return merged;
 }

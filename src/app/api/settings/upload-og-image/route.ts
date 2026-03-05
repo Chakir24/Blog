@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 import { validateImageUpload } from '@/lib/file-validation';
+import { supabase, UPLOADS_BUCKET } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   const cookieStore = await cookies();
@@ -23,14 +22,29 @@ export async function POST(request: Request) {
     if (!validation.valid) {
       return NextResponse.json({ error: validation.error }, { status: 400 });
     }
-    const publicDir = path.join(process.cwd(), 'public');
-    const filePath = path.join(publicDir, 'og-image.jpg');
 
-    await mkdir(publicDir, { recursive: true });
-    await writeFile(filePath, buffer);
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const path = `og-image.${ext}`;
 
-    return NextResponse.json({ url: '/og-image.jpg' });
-  } catch {
-    return NextResponse.json({ error: 'Erreur lors de l\'upload' }, { status: 500 });
+    const { error } = await supabase.storage
+      .from(UPLOADS_BUCKET)
+      .upload(path, buffer, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (error) {
+      console.error('[upload-og-image]', error);
+      return NextResponse.json(
+        { error: "Erreur lors de l'upload. Vérifiez que le bucket 'uploads' existe dans Supabase Storage." },
+        { status: 500 }
+      );
+    }
+
+    const { data: urlData } = supabase.storage.from(UPLOADS_BUCKET).getPublicUrl(path);
+    return NextResponse.json({ url: urlData.publicUrl });
+  } catch (err) {
+    console.error('[upload-og-image]', err);
+    return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 });
   }
 }
