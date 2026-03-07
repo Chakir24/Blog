@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import type { Article } from '@/lib/types';
+import { addArticle, updateArticle } from '@/app/actions/articles';
 
 interface Category {
   id: string;
@@ -73,19 +74,12 @@ export function ArticleForm({ article }: ArticleFormProps) {
     setError('');
     setLoading(true);
     const readingTime = estimateReadingTime(form.content);
-    const payload = { ...form, readingTime };
+    const payload: Article = { ...form, readingTime };
     try {
-      const url = article ? `/api/articles/${article.slug}` : '/api/articles';
-      const method = article ? 'PUT' : 'POST';
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        credentials: 'include',
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Erreur');
+      if (article) {
+        await updateArticle(article.slug, payload);
+      } else {
+        await addArticle(payload);
       }
       router.push('/admin/articles');
       router.refresh();

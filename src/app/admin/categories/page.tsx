@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { addCategory, removeCategory } from '@/app/actions/categories';
 
 interface Category {
   id: string;
@@ -40,18 +41,7 @@ export default function AdminCategoriesPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch('/api/categories', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ label }),
-        credentials: 'include',
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Erreur');
-      }
-
+      const data = await addCategory(label);
       setCategories((prev) => [...prev, data]);
       setNewLabel('');
     } catch (err) {
@@ -65,14 +55,7 @@ export default function AdminCategoriesPage() {
     if (!confirm(`Supprimer la catégorie « ${categories.find((c) => c.id === id)?.label} » ?`)) return;
 
     try {
-      const res = await fetch(`/api/categories?id=${encodeURIComponent(id)}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || 'Erreur');
-      }
+      await removeCategory(id);
       setCategories((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');

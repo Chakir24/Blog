@@ -2,21 +2,18 @@
 
 import { useRouter } from 'next/navigation';
 import { Trash2 } from 'lucide-react';
+import { removeArticle } from '@/app/actions/articles';
 
 export function DeleteArticleButton({ slug }: { slug: string }) {
   const router = useRouter();
 
   const handleDelete = async () => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
-    const res = await fetch(`/api/articles/${slug}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-    if (res.ok) {
+    try {
+      await removeArticle(slug);
       router.refresh();
-    } else {
-      const data = await res.json().catch(() => ({}));
-      alert(data.error || 'Erreur lors de la suppression');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
     }
   };
 
