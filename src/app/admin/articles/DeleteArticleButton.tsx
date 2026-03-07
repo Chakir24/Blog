@@ -8,9 +8,15 @@ export function DeleteArticleButton({ slug }: { slug: string }) {
 
   const handleDelete = async () => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
-    const res = await fetch(`/api/articles/${slug}`, { method: 'DELETE' });
+    const res = await fetch(`/api/articles/${slug}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
     if (res.ok) {
       router.refresh();
+    } else {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || 'Erreur lors de la suppression');
     }
   };
 

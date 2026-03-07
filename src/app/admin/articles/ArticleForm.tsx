@@ -81,6 +81,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        credentials: 'include',
       });
       if (!res.ok) {
         const data = await res.json();

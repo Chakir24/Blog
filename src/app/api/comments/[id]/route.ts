@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getComments, saveComments } from '@/lib/storage';
+import { getComments, saveComments, deleteComment } from '@/lib/storage';
 
 export async function PATCH(
   request: Request,
@@ -33,10 +33,9 @@ export async function DELETE(
 
   const { id } = await params;
   const comments = await getComments();
-  const filtered = comments.filter((c) => c.id !== id);
-  if (filtered.length === comments.length) {
+  if (!comments.some((c) => c.id === id)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
-  await saveComments(filtered);
+  await deleteComment(id);
   return NextResponse.json({ success: true });
 }

@@ -52,6 +52,14 @@ export async function saveArticles(articles: Article[]): Promise<void> {
   }
 }
 
+export async function deleteArticle(slug: string): Promise<void> {
+  const { error } = await supabase.from('articles').delete().eq('slug', slug);
+
+  if (error) {
+    throw new Error(`Erreur lors de la suppression de l'article : ${error.message}`);
+  }
+}
+
 // --- Comments ---
 
 export interface Comment {
@@ -103,6 +111,14 @@ export async function saveComments(comments: Comment[]): Promise<void> {
 
   if (error) {
     throw new Error(`Erreur lors de la sauvegarde des commentaires : ${error.message}`);
+  }
+}
+
+export async function deleteComment(id: string): Promise<void> {
+  const { error } = await supabase.from('comments').delete().eq('id', id);
+
+  if (error) {
+    throw new Error(`Erreur lors de la suppression du commentaire : ${error.message}`);
   }
 }
 
@@ -179,6 +195,14 @@ export async function saveCategories(categories: Category[]): Promise<void> {
 
   if (error) {
     throw new Error(`Erreur lors de la sauvegarde des catégories : ${error.message}`);
+  }
+}
+
+export async function deleteCategory(id: string): Promise<void> {
+  const { error } = await supabase.from('categories').delete().eq('id', id);
+
+  if (error) {
+    throw new Error(`Erreur lors de la suppression de la catégorie : ${error.message}`);
   }
 }
 

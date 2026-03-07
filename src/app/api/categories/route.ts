@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getCategories, saveCategories, getArticles } from '@/lib/storage';
+import { getCategories, saveCategories, deleteCategory, getArticles } from '@/lib/storage';
 import type { Category } from '@/lib/storage';
 
 function slugify(text: string): string {
@@ -72,8 +72,7 @@ export async function DELETE(request: Request) {
       getCategories(),
       getArticles(),
     ]);
-    const filtered = categories.filter((c) => c.id !== id);
-    if (filtered.length === categories.length) {
+    if (!categories.some((c) => c.id === id)) {
       return NextResponse.json({ error: 'Catégorie introuvable' }, { status: 404 });
     }
 
@@ -85,7 +84,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    await saveCategories(filtered);
+    await deleteCategory(id);
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erreur';

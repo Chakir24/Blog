@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getArticles, saveArticles } from '@/lib/storage';
+import { getArticles, saveArticles, deleteArticle } from '@/lib/storage';
 import type { Article } from '@/lib/types';
 
 export async function GET(
@@ -51,12 +51,11 @@ export async function DELETE(
 
   const { slug } = await params;
   const articles = await getArticles();
-  const filtered = articles.filter((a) => a.slug !== slug);
-  if (filtered.length === articles.length) {
+  if (!articles.some((a) => a.slug === slug)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
   try {
-    await saveArticles(filtered);
+    await deleteArticle(slug);
     return NextResponse.json({ success: true });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Erreur';
