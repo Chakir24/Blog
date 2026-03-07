@@ -85,7 +85,6 @@ export function ArticleForm({ article }: ArticleFormProps) {
       }
       alert(article ? 'Article modifié avec succès.' : 'Article publié avec succès.');
       router.push('/admin/articles');
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de l\'enregistrement');
     } finally {
