@@ -62,6 +62,16 @@ body {
   background: var(--muted-foreground);
 }
 
+/* Défilement style statuts (horizontal) */
+.articles-status-scroll {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.articles-status-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
 /* Selection */
 ::selection {
   background: rgba(99, 102, 241, 0.3);

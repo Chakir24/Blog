@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArticleCard } from './ArticleCard';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArticleStatusCard } from './ArticleStatusCard';
 import type { ArticleCard as ArticleCardType } from '@/lib/types';
 
 interface Category {
@@ -17,6 +18,7 @@ interface ArticlesSectionProps {
 export function ArticlesSection({ articles }: ArticlesSectionProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch('/api/categories', { cache: 'no-store' })
@@ -32,6 +34,17 @@ export function ArticlesSection({ articles }: ArticlesSectionProps) {
       ? articles
       : articles.filter((a) => a.category === activeCategory);
 
+  const scroll = (direction: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const cardWidth = 300;
+    const gap = 24;
+    const scrollAmount = cardWidth + gap;
+    scrollRef.current.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth',
+    });
+  };
+
   return (
     <section id="articles" className="scroll-mt-28 px-4 py-16 sm:px-6 sm:py-20 md:scroll-mt-24 md:py-24">
       <div className="mx-auto max-w-6xl">
@@ -45,7 +58,7 @@ export function ArticlesSection({ articles }: ArticlesSectionProps) {
             Articles récents
           </h2>
           <p className="mt-3 text-base text-[var(--muted-foreground)] sm:mt-4 sm:text-lg">
-            Réflexions, lifestyle, créativité et inspiration
+            Glissez pour parcourir, comme des statuts WhatsApp
           </p>
         </motion.div>
 
@@ -53,7 +66,7 @@ export function ArticlesSection({ articles }: ArticlesSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-12 flex flex-wrap gap-2"
+          className="mb-8 flex flex-wrap gap-2"
         >
           <button
             key="all"
@@ -81,17 +94,40 @@ export function ArticlesSection({ articles }: ArticlesSectionProps) {
           ))}
         </motion.div>
 
-        <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence mode="wait">
+        {/* Conteneur style défilement WhatsApp */}
+        <div className="relative">
+          <button
+            onClick={() => scroll('left')}
+            aria-label="Défiler à gauche"
+            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[var(--card)]/90 p-2 shadow-lg backdrop-blur-sm transition hover:bg-[var(--accent)]/20 md:-left-4"
+          >
+            <ChevronLeft size={24} className="text-[var(--foreground)]" />
+          </button>
+          <button
+            onClick={() => scroll('right')}
+            aria-label="Défiler à droite"
+            className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-[var(--card)]/90 p-2 shadow-lg backdrop-blur-sm transition hover:bg-[var(--accent)]/20 md:-right-4"
+          >
+            <ChevronRight size={24} className="text-[var(--foreground)]" />
+          </button>
+
+          <div
+            ref={scrollRef}
+            className="articles-status-scroll flex overflow-x-auto pb-4 scroll-smooth"
+          >
+            {/* Espacement pour le premier élément */}
+            <div className="shrink-0 w-2" />{' '}
             {filtered.map((article, i) => (
-              <ArticleCard
+              <ArticleStatusCard
                 key={article.slug}
                 article={article}
                 index={i}
                 categoryLabel={categoryLabels[article.category] ?? article.category}
               />
             ))}
-          </AnimatePresence>
+            {/* Espacement pour le dernier élément */}
+            <div className="shrink-0 w-2" />
+          </div>
         </div>
       </div>
     </section>
