@@ -59,7 +59,7 @@ export default function AdminSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    fetch('/api/settings', { credentials: 'include' })
+    fetch('/api/settings', { credentials: 'include', cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => setForm((prev) => ({
         ...prev,

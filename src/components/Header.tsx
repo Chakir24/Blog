@@ -30,7 +30,7 @@ export function Header() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    fetch('/api/auth/check')
+    fetch('/api/auth/check', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => setIsAdmin(data.authenticated === true))
       .catch(() => setIsAdmin(false));

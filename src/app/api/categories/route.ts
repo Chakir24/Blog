@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
 import { getCategories, saveCategories, deleteCategory, getArticles } from '@/lib/storage';
 import type { Category } from '@/lib/storage';
 

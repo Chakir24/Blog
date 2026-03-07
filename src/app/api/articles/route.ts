@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
 import { getArticles, saveArticles, getSubscribers } from '@/lib/storage';
 import { sendArticleNotification } from '@/lib/email';
 import type { Article } from '@/lib/types';

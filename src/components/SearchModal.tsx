@@ -21,8 +21,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   useEffect(() => {
     if (isOpen) {
       Promise.all([
-        fetch('/api/articles').then((res) => res.json()).catch(() => []),
-        fetch('/api/categories').then((res) => res.json()).catch(() => []),
+        fetch('/api/articles', { cache: 'no-store' }).then((res) => res.json()).catch(() => []),
+        fetch('/api/categories', { cache: 'no-store' }).then((res) => res.json()).catch(() => []),
       ]).then(([arts, cats]) => {
         setArticles(Array.isArray(arts) ? arts : []);
         const labels = Object.fromEntries(

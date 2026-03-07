@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+
+export const dynamic = 'force-dynamic';
 import { getComments } from '@/lib/storage';
 
 export async function GET(request: Request) {

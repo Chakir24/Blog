@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache';
 import { createHash } from 'crypto';
 import { getSettings, saveSettings } from '@/lib/storage';
 
+export const dynamic = 'force-dynamic';
+
 function hashPassword(password: string): string {
   const salt = process.env.ADMIN_PASSWORD_SALT || 'blog-admin-salt';
   return createHash('sha256').update(password + salt).digest('hex');

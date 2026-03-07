@@ -20,7 +20,7 @@ export function Comments({ slug }: { slug: string }) {
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
-    fetch(`/api/comments?articleSlug=${slug}`)
+    fetch(`/api/comments?articleSlug=${slug}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => setComments(data))
       .catch(() => setComments([]))

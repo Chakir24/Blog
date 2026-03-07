@@ -19,7 +19,7 @@ export function ArticlesSection({ articles }: ArticlesSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   useEffect(() => {
-    fetch('/api/categories')
+    fetch('/api/categories', { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => setCategories(Array.isArray(data) ? data : []))
       .catch(() => setCategories([]));
