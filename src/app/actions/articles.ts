@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { getArticles, saveArticles, deleteArticle, getSubscribers } from '@/lib/storage';
 import { sendArticleNotification } from '@/lib/email';
 import type { Article } from '@/lib/types';
@@ -34,6 +35,10 @@ export async function addArticle(article: Article): Promise<ActionResult> {
         sendArticleNotification(article, emails).catch(() => {});
       }
     }
+    revalidatePath('/admin/articles');
+    revalidatePath('/admin/articles/new');
+    revalidatePath('/', 'layout');
+    revalidatePath('/articles', 'layout');
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Erreur' };
@@ -49,6 +54,11 @@ export async function updateArticle(slug: string, article: Article): Promise<Act
     if (index === -1) return { ok: false, error: 'Not found' };
     articles[index] = article;
     await saveArticles(articles);
+    revalidatePath('/admin/articles');
+    revalidatePath(`/admin/articles/${slug}/edit`);
+    revalidatePath('/', 'layout');
+    revalidatePath('/articles', 'layout');
+    revalidatePath(`/articles/${slug}`);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Erreur' };
@@ -63,6 +73,10 @@ export async function removeArticle(slug: string): Promise<ActionResult> {
     const articles = await getArticles();
     if (!articles.some((a) => a.slug === slug)) return { ok: false, error: 'Not found' };
     await deleteArticle(slug);
+    revalidatePath('/admin/articles');
+    revalidatePath('/', 'layout');
+    revalidatePath('/articles', 'layout');
+    revalidatePath(`/articles/${slug}`);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Erreur' };

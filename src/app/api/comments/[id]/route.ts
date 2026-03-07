@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { getComments, saveComments, deleteComment } from '@/lib/storage';
 
 export async function PATCH(
@@ -19,6 +20,8 @@ export async function PATCH(
 
   comments[index].approved = approved;
   await saveComments(comments);
+  revalidatePath('/admin/comments');
+  revalidatePath('/articles', 'layout');
   return NextResponse.json(comments[index]);
 }
 
@@ -37,5 +40,7 @@ export async function DELETE(
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
   await deleteComment(id);
+  revalidatePath('/admin/comments');
+  revalidatePath('/articles', 'layout');
   return NextResponse.json({ success: true });
 }

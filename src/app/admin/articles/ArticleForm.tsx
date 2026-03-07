@@ -46,7 +46,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
   });
 
   useEffect(() => {
-    fetch('/api/categories', { credentials: 'include' })
+    fetch('/api/categories', { credentials: 'include', cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         const cats = Array.isArray(data) ? data : [];

@@ -1,6 +1,7 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { revalidatePath } from 'next/cache';
 import { getCategories, saveCategories, deleteCategory, getArticles } from '@/lib/storage';
 import type { Category } from '@/lib/storage';
 
@@ -41,6 +42,10 @@ export async function addCategory(label: string): Promise<ActionResult<Category>
     const newCat = { id, label: label.trim() };
     categories.push(newCat);
     await saveCategories(categories);
+    revalidatePath('/admin/categories');
+    revalidatePath('/admin/articles');
+    revalidatePath('/admin/articles/new');
+    revalidatePath('/', 'layout');
     return { ok: true, data: newCat };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Erreur' };
@@ -63,6 +68,10 @@ export async function removeCategory(id: string): Promise<ActionResult> {
       return { ok: false, error: 'Impossible de supprimer : des articles utilisent cette catégorie' };
     }
     await deleteCategory(id);
+    revalidatePath('/admin/categories');
+    revalidatePath('/admin/articles');
+    revalidatePath('/admin/articles/new');
+    revalidatePath('/', 'layout');
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : 'Erreur' };

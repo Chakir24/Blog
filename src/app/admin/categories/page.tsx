@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { addCategory, removeCategory } from '@/app/actions/categories';
@@ -18,8 +19,12 @@ export default function AdminCategoriesPage() {
   const [error, setError] = useState('');
 
   const fetchCategories = async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/categories', { credentials: 'include' });
+      const res = await fetch('/api/categories', {
+        credentials: 'include',
+        cache: 'no-store',
+      });
       const data = await res.json();
       setCategories(Array.isArray(data) ? data : []);
     } catch {
@@ -29,9 +34,12 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const pathname = usePathname();
   useEffect(() => {
-    fetchCategories();
-  }, []);
+    if (pathname === '/admin/categories') {
+      fetchCategories();
+    }
+  }, [pathname]);
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
