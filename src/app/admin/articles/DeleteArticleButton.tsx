@@ -15,6 +15,7 @@ export function DeleteArticleButton({ slug }: { slug: string }) {
         if (result.redirect) router.push(result.redirect);
         throw new Error(result.error);
       }
+      alert('Article supprimé avec succès.');
       router.refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');

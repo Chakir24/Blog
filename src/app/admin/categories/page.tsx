@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { addCategory, removeCategory } from '@/app/actions/categories';
@@ -12,6 +12,7 @@ interface Category {
 }
 
 export default function AdminCategoriesPage() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [newLabel, setNewLabel] = useState('');
@@ -56,6 +57,8 @@ export default function AdminCategoriesPage() {
       }
       if (result.data) setCategories((prev) => [...prev, result.data!]);
       setNewLabel('');
+      alert('Catégorie ajoutée avec succès.');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de l\'ajout');
     } finally {
@@ -73,6 +76,8 @@ export default function AdminCategoriesPage() {
         throw new Error(result.error);
       }
       setCategories((prev) => prev.filter((c) => c.id !== id));
+      alert('Catégorie supprimée avec succès.');
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');
     }

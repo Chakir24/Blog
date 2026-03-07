@@ -28,10 +28,10 @@ export default function AdminLoginPage() {
         router.push('/admin');
         router.refresh();
       } else {
-        setError('Mot de passe incorrect');
+        setError(data.error || 'Mot de passe incorrect');
       }
-    } catch {
-      setError('Erreur de connexion');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur de connexion');
     } finally {
       setLoading(false);
     }

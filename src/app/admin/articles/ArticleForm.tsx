@@ -83,6 +83,7 @@ export function ArticleForm({ article }: ArticleFormProps) {
         if (result.redirect) router.push(result.redirect);
         throw new Error(result.error);
       }
+      alert(article ? 'Article modifié avec succès.' : 'Article publié avec succès.');
       router.push('/admin/articles');
       router.refresh();
     } catch (err) {

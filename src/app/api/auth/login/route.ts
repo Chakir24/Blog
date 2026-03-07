@@ -32,9 +32,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false }, { status: 413 });
   }
   const clientId = getClientIdentifier(request);
-  const { allowed } = checkRateLimit(`login:${clientId}`, LOGIN_RATE_LIMIT, LOGIN_WINDOW_MS);
+  const limit = process.env.NODE_ENV === 'development' ? 20 : LOGIN_RATE_LIMIT;
+  const { allowed } = checkRateLimit(`login:${clientId}`, limit, LOGIN_WINDOW_MS);
   if (!allowed) {
-    return NextResponse.json({ error: 'Trop de tentatives. Réessayez plus tard.' }, { status: 429 });
+    return NextResponse.json({ success: false, error: 'Trop de tentatives. Réessayez dans 1 minute.' }, { status: 429 });
   }
 
   try {
@@ -48,9 +49,13 @@ export async function POST(request: Request) {
     const envPassword = process.env.ADMIN_PASSWORD || 'admin123';
     const storedHash = settings.adminPasswordHash;
 
-    const isValid = storedHash
-      ? constantTimeCompare(hashPassword(password), storedHash)
-      : envPassword && constantTimeCompare(password, envPassword);
+    // En local : ADMIN_PASSWORD prime si défini (pour éviter conflit avec hash en prod)
+    const useEnvFirst = process.env.NODE_ENV === 'development' && process.env.ADMIN_PASSWORD;
+    const isValid = useEnvFirst
+      ? constantTimeCompare(password, envPassword)
+      : storedHash
+        ? constantTimeCompare(hashPassword(password), storedHash)
+        : envPassword && constantTimeCompare(password, envPassword);
 
     if (isValid) {
       const cookieStore = await cookies();
