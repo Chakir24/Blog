@@ -19,6 +19,7 @@ export function NotifyButton({ slug, title }: NotifyButtonProps) {
     setMessage(null);
     try {
       const res = await fetch('/api/newsletter/notify', {
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug }),

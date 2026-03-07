@@ -18,7 +18,7 @@ export default function AdminCategoriesPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await fetch('/api/categories');
+      const res = await fetch('/api/categories', { credentials: 'include' });
       const data = await res.json();
       setCategories(Array.isArray(data) ? data : []);
     } catch {
@@ -44,6 +44,7 @@ export default function AdminCategoriesPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ label }),
+        credentials: 'include',
       });
       const data = await res.json();
 
@@ -66,6 +67,7 @@ export default function AdminCategoriesPage() {
     try {
       const res = await fetch(`/api/categories?id=${encodeURIComponent(id)}`, {
         method: 'DELETE',
+        credentials: 'include',
       });
       if (!res.ok) {
         const data = await res.json();

@@ -44,10 +44,22 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<PublicSettings>(defaultSettings);
 
   useEffect(() => {
-    fetch('/api/settings/public')
-      .then((res) => res.json())
-      .then((data) => setSettings({ ...defaultSettings, ...data }))
-      .catch(() => {});
+    const load = () => {
+      fetch('/api/settings/public', { cache: 'no-store' })
+        .then((res) => res.json())
+        .then((data) => setSettings({ ...defaultSettings, ...data }))
+        .catch(() => {});
+    };
+    load();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') load();
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('refresh-settings', load);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('refresh-settings', load);
+    };
   }, []);
 
   return (

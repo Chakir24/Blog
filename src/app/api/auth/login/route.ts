@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       cookieStore.set(SESSION_COOKIE, 'authenticated', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax', // lax permet l'envoi du cookie en production (navigation, liens externes)
         maxAge: 60 * 60 * 24 * 7, // 7 days
         path: '/',
       });

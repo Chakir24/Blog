@@ -16,6 +16,7 @@ export function CommentActions({ comment }: { comment: Comment }) {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ approved: true }),
+      credentials: 'include',
     });
     router.refresh();
   };
@@ -31,7 +32,7 @@ export function CommentActions({ comment }: { comment: Comment }) {
 
   const handleDelete = async () => {
     if (!confirm('Supprimer ce commentaire ?')) return;
-    await fetch(`/api/comments/${comment.id}`, { method: 'DELETE' });
+    await fetch(`/api/comments/${comment.id}`, { method: 'DELETE', credentials: 'include' });
     router.refresh();
   };
 

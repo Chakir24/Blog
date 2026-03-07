@@ -59,7 +59,7 @@ export default function AdminSettingsPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
-    fetch('/api/settings')
+    fetch('/api/settings', { credentials: 'include' })
       .then((res) => res.json())
       .then((data) => setForm((prev) => ({
         ...prev,
@@ -95,12 +95,14 @@ export default function AdminSettingsPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        credentials: 'include',
       });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || 'Erreur');
       }
       setMessage({ type: 'success', text: 'Paramètres enregistrés' });
+      window.dispatchEvent(new CustomEvent('refresh-settings'));
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
@@ -121,11 +123,22 @@ export default function AdminSettingsPage() {
       const res = await fetch('/api/settings/upload-profile', {
         method: 'POST',
         body: formData,
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
-      setForm((f) => ({ ...f, profileImage: data.url }));
+      const newForm = { ...form, profileImage: data.url };
+      setForm(newForm);
+      // Sauvegarder immédiatement en base pour que le profil affiche la nouvelle image
+      const saveRes = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileImage: data.url }),
+        credentials: 'include',
+      });
+      if (!saveRes.ok) throw new Error('Image uploadée mais erreur lors de l\'enregistrement');
       setMessage({ type: 'success', text: 'Image mise à jour' });
+      window.dispatchEvent(new CustomEvent('refresh-settings'));
     } catch (err) {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Erreur' });
     } finally {
@@ -144,14 +157,22 @@ export default function AdminSettingsPage() {
       const res = await fetch('/api/settings/upload-og-image', {
         method: 'POST',
         body: formData,
+        credentials: 'include',
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur');
-      setForm((f) => ({
-        ...f,
-        seo: { ...defaultSeo, ...f.seo, ogImage: data.url },
-      }));
+      const newSeo = { ...defaultSeo, ...form.seo, ogImage: data.url };
+      setForm((f) => ({ ...f, seo: newSeo }));
+      // Sauvegarder immédiatement en base
+      const saveRes = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ seo: newSeo }),
+        credentials: 'include',
+      });
+      if (!saveRes.ok) throw new Error('Image uploadée mais erreur lors de l\'enregistrement');
       setMessage({ type: 'success', text: 'Image Open Graph mise à jour' });
+      window.dispatchEvent(new CustomEvent('refresh-settings'));
     } catch (err) {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Erreur' });
     } finally {
