@@ -10,7 +10,11 @@ export function DeleteArticleButton({ slug }: { slug: string }) {
   const handleDelete = async () => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) return;
     try {
-      await removeArticle(slug);
+      const result = await removeArticle(slug);
+      if (!result.ok) {
+        if (result.redirect) router.push(result.redirect);
+        throw new Error(result.error);
+      }
       router.refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');

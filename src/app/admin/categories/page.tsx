@@ -41,8 +41,12 @@ export default function AdminCategoriesPage() {
 
     setSubmitting(true);
     try {
-      const data = await addCategory(label);
-      setCategories((prev) => [...prev, data]);
+      const result = await addCategory(label);
+      if (!result.ok) {
+        if (result.redirect) window.location.href = result.redirect;
+        throw new Error(result.error);
+      }
+      if (result.data) setCategories((prev) => [...prev, result.data!]);
       setNewLabel('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de l\'ajout');
@@ -55,7 +59,11 @@ export default function AdminCategoriesPage() {
     if (!confirm(`Supprimer la catégorie « ${categories.find((c) => c.id === id)?.label} » ?`)) return;
 
     try {
-      await removeCategory(id);
+      const result = await removeCategory(id);
+      if (!result.ok) {
+        if (result.redirect) window.location.href = result.redirect;
+        throw new Error(result.error);
+      }
       setCategories((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la suppression');

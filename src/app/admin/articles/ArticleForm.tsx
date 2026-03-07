@@ -76,10 +76,12 @@ export function ArticleForm({ article }: ArticleFormProps) {
     const readingTime = estimateReadingTime(form.content);
     const payload: Article = { ...form, readingTime };
     try {
-      if (article) {
-        await updateArticle(article.slug, payload);
-      } else {
-        await addArticle(payload);
+      const result = article
+        ? await updateArticle(article.slug, payload)
+        : await addArticle(payload);
+      if (!result.ok) {
+        if (result.redirect) router.push(result.redirect);
+        throw new Error(result.error);
       }
       router.push('/admin/articles');
       router.refresh();
