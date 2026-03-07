@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSettings } from './SettingsProvider';
 
 function getInitials(name: string) {
@@ -17,6 +17,11 @@ export function Hero() {
   const settings = useSettings();
 
   const profileSrc = settings.profileImage || '/profile.jpg';
+
+  // Réinitialiser imageError quand l'URL change (nouvelle image uploadée)
+  useEffect(() => {
+    setImageError(false);
+  }, [profileSrc]);
   const initials = getInitials(settings.authorName || 'Manftou Hath');
 
   return (

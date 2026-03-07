@@ -24,7 +24,7 @@ export async function POST(request: Request) {
     }
 
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-    const path = `og-image.${ext}`;
+    const path = `og-image-${Date.now()}.${ext}`;
 
     const { error } = await supabase.storage
       .from(UPLOADS_BUCKET)
