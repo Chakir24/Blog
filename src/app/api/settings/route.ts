@@ -41,7 +41,9 @@ export async function PUT(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- exclude from response
     const { adminPasswordHash: _hash, ...publicSettings } = settings;
     return NextResponse.json(publicSettings);
-  } catch {
-    return NextResponse.json({ error: 'Données invalides' }, { status: 400 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Données invalides';
+    console.error('[api/settings PUT]', err);
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 }

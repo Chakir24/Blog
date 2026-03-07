@@ -30,8 +30,14 @@ export async function PUT(
   if (index === -1) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
   articles[index] = article;
-  await saveArticles(articles);
-  return NextResponse.json(article);
+  try {
+    await saveArticles(articles);
+    return NextResponse.json(article);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Erreur';
+    console.error('[api/articles PUT]', err);
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
 }
 
 export async function DELETE(
@@ -49,6 +55,12 @@ export async function DELETE(
   if (filtered.length === articles.length) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
-  await saveArticles(filtered);
-  return NextResponse.json({ success: true });
+  try {
+    await saveArticles(filtered);
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Erreur';
+    console.error('[api/articles DELETE]', err);
+    return NextResponse.json({ error: msg }, { status: 400 });
+  }
 }

@@ -40,7 +40,9 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(article);
-  } catch {
-    return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Invalid data';
+    console.error('[api/articles POST]', err);
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 }

@@ -48,8 +48,10 @@ export async function POST(request: Request) {
     categories.push(newCategory);
     await saveCategories(categories);
     return NextResponse.json(newCategory);
-  } catch {
-    return NextResponse.json({ error: 'Données invalides' }, { status: 400 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Données invalides';
+    console.error('[api/categories POST]', err);
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 }
 
@@ -85,7 +87,9 @@ export async function DELETE(request: Request) {
 
     await saveCategories(filtered);
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: 'Erreur' }, { status: 400 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'Erreur';
+    console.error('[api/categories DELETE]', err);
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 }
