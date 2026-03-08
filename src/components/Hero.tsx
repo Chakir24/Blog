@@ -117,12 +117,6 @@ export function Hero() {
         >
           En savoir plus
         </Link>
-        <Link
-          href="/#contact"
-          className="flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass)] px-8 py-4 font-semibold transition-all hover:border-[var(--accent)]/50 hover:bg-[var(--accent)]/10"
-        >
-          Me contacter
-        </Link>
       </motion.div>
     </section>
   );

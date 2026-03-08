@@ -239,8 +239,7 @@ export interface Settings {
 const DEFAULT_SETTINGS: Settings = {
   authorName: 'Manftou Hath',
   authorTitle: 'Auteure & créatrice de contenu',
-  authorBio:
-    "J'aime partager mes idées à travers la toile. Ce blog est mon espace pour écrire sur ce qui me touche : réflexions de vie, créativité, petits bonheurs et tout ce qui m'inspire. Si vous êtes ici, merci de faire partie du voyage.",
+  authorBio: '',
   authorImages: [],
   profileImage: '/profile.jpg',
   slogan: 'Réflexions · Créativité · Inspiration',

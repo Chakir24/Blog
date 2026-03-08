@@ -21,7 +21,21 @@ export function ArticleStatusCard({ article, index = 0, categoryLabel }: Article
       className="shrink-0 snap-center snap-always"
     >
       <Link href={`/articles/${article.slug}`} className="block">
-        <div className="group relative mx-2 flex h-[320px] w-[280px] flex-col overflow-hidden rounded-2xl border-2 border-[var(--accent)]/30 bg-[var(--card)] shadow-lg transition-all duration-300 hover:border-[var(--accent)]/70 hover:shadow-[0_0_24px_rgba(99,102,241,0.3)] sm:mx-3 sm:w-[300px]">
+        <div
+          className="group relative mx-2 flex h-[320px] w-[280px] flex-col overflow-hidden rounded-2xl border-2 border-[var(--accent)]/30 shadow-lg transition-all duration-300 hover:border-[var(--accent)]/70 hover:shadow-[0_0_24px_rgba(99,102,241,0.3)] sm:mx-3 sm:w-[300px]"
+          style={
+            article.image
+              ? {
+                  backgroundImage: `url(${article.image})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
+              : { backgroundColor: 'var(--card)' }
+          }
+        >
+          {article.image && (
+            <div className="absolute inset-0 bg-[var(--background)]/70" aria-hidden />
+          )}
           <div className="relative flex flex-1 flex-col p-5">
             <span className="inline-block w-fit rounded-full bg-[var(--accent)]/25 px-3 py-1 text-xs font-semibold text-[var(--accent)]">
               {categoryLabel ?? article.category}

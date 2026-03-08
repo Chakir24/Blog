@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, FileText, ImagePlus, Save, Search, Shield, Trash2, Upload, User } from 'lucide-react';
+import { ArticleContentEditor } from '@/components/ArticleContentEditor';
 
 interface SeoData {
   metaTitle: string;
@@ -350,15 +351,16 @@ export default function AdminSettingsPage() {
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium">Texte À propos (sous le titre)</label>
-                  <textarea
-                    rows={4}
+                  <ArticleContentEditor
                     value={form.authorBio}
-                    onChange={(e) => setForm((f) => ({ ...f, authorBio: e.target.value }))}
-                    placeholder="J'aime partager mes idées à travers la toile..."
-                    className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-3"
+                    onChange={(v) => setForm((f) => ({ ...f, authorBio: v }))}
+                    placeholder="Saisissez votre texte de présentation..."
+                    rows={6}
+                    showImageUpload={false}
+                    required={false}
                   />
                   <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                    Texte affiché sur la page À propos, juste sous le titre (ex. bloggueuse)
+                    Texte affiché sur la page À propos. Utilisez la barre d&apos;outils pour le formatage (police, gras, italique, titres, etc.).
                   </p>
                 </div>
                 <div>

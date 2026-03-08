@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import {
   PenLine,
   BookOpen,
@@ -55,10 +58,27 @@ export default function AProposPage() {
             <p className="mt-2 text-base text-[var(--accent)] sm:text-lg md:text-xl">
               {settings.authorTitle || 'Auteure & créatrice de contenu'}
             </p>
-            <p className="mt-4 text-base leading-relaxed text-[var(--muted-foreground)] sm:mt-6 sm:text-lg">
-              {settings.authorBio ||
-                "J'aime partager mes idées à travers la toile. Ce blog est mon espace pour écrire sur ce qui me touche : réflexions de vie, créativité, petits bonheurs et tout ce qui m'inspire. Si vous êtes ici, merci de faire partie du voyage."}
-            </p>
+            {settings.authorBio?.trim() && (
+              <div className="prose-a-propos mt-4 text-base leading-relaxed text-[var(--muted-foreground)] sm:mt-6 sm:text-lg [&_a]:text-[var(--accent)] [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-[var(--accent-hover)] [&_strong]:font-semibold [&_strong]:text-[var(--foreground)] [&_em]:italic [&_u]:underline [&_ul]:list-disc [&_ul]:pl-6 [&_li]:my-1 [&_h2]:font-serif [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:font-serif [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-3 [&_h3]:mb-1 [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--accent)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--muted-foreground)] [&_code]:bg-[var(--glass)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_pre]:bg-[var(--card)] [&_pre]:border [&_pre]:border-[var(--card-border)] [&_pre]:rounded-lg [&_pre]:p-3 [&_pre]:text-sm [&_span]:inline">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    a: ({ href, children }) => (
+                      <a
+                        href={href}
+                        target={href?.startsWith('http') ? '_blank' : undefined}
+                        rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                      >
+                        {children}
+                      </a>
+                    ),
+                  }}
+                >
+                  {settings.authorBio}
+                </ReactMarkdown>
+              </div>
+            )}
             <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:gap-4 md:justify-start">
               {socials.map(({ icon: Icon, href, label }) => (
                 <a

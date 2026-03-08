@@ -58,7 +58,7 @@ export function ArticlesSection({ articles }: ArticlesSectionProps) {
             Articles récents
           </h2>
           <p className="mt-3 text-base text-[var(--muted-foreground)] sm:mt-4 sm:text-lg">
-            Glissez pour parcourir, comme des statuts WhatsApp
+            Glissez pour parcourir
           </p>
         </motion.div>
 

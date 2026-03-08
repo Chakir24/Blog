@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
 import { Clock, ArrowLeft } from 'lucide-react';
 import { ReadingProgress } from '@/components/ReadingProgress';
@@ -88,9 +89,9 @@ export function ArticleLayout({ article, related, categoryLabel, categoryLabels 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="prose prose-sm max-w-none sm:prose-base md:prose-lg [&_h2]:scroll-mt-28 [&_h2]:font-serif [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-3 [&_h3]:scroll-mt-28 [&_h3]:font-serif [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-2 sm:[&_h2]:text-2xl sm:[&_h2]:mt-12 sm:[&_h2]:mb-4 sm:[&_h3]:text-xl sm:[&_h3]:mt-8 sm:[&_h3]:mb-3 [&_p]:mb-3 [&_p]:leading-relaxed sm:[&_p]:mb-4 [&_a]:text-[var(--accent)] [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-[var(--accent-hover)] [&_code]:bg-[var(--glass)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_pre]:bg-[var(--card)] [&_pre]:border [&_pre]:border-[var(--card-border)] [&_pre]:rounded-xl [&_pre]:p-3 [&_pre]:text-sm sm:[&_pre]:p-4 sm:[&_pre]:text-base [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--accent)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--muted-foreground)]"
+              className="prose prose-sm max-w-none sm:prose-base md:prose-lg [&_h2]:scroll-mt-28 [&_h2]:font-serif [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-10 [&_h2]:mb-3 [&_h3]:scroll-mt-28 [&_h3]:font-serif [&_h3]:text-lg [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-2 sm:[&_h2]:text-2xl sm:[&_h2]:mt-12 sm:[&_h2]:mb-4 sm:[&_h3]:text-xl sm:[&_h3]:mt-8 sm:[&_h3]:mb-3 [&_p]:mb-3 [&_p]:leading-relaxed sm:[&_p]:mb-4 [&_a]:text-[var(--accent)] [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-[var(--accent-hover)] [&_code]:bg-[var(--glass)] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_pre]:bg-[var(--card)] [&_pre]:border [&_pre]:border-[var(--card-border)] [&_pre]:rounded-xl [&_pre]:p-3 [&_pre]:text-sm sm:[&_pre]:p-4 sm:[&_pre]:text-base [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--accent)] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--muted-foreground)] [&_img]:rounded-xl [&_img]:border [&_img]:border-[var(--card-border)] [&_img]:my-4 [&_u]:underline [&_span]:inline"
             >
-              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, rehypeSlug]}>
                 {article.content.trim()}
               </ReactMarkdown>
             </motion.div>

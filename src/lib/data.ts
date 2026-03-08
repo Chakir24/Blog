@@ -29,13 +29,14 @@ export async function getRelatedArticles(slug: string, limit = 3): Promise<Artic
       return sameCategoryB - sameCategory;
     })
     .slice(0, limit)
-    .map(({ slug, title, excerpt, category, publishedAt, readingTime }) => ({
+    .map(({ slug, title, excerpt, category, publishedAt, readingTime, image }) => ({
       slug,
       title,
       excerpt,
       category,
       publishedAt,
       readingTime,
+      image,
     }));
 }
 
