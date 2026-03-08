@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, FileText, Save, Search, Shield, Upload, User } from 'lucide-react';
+import { ArrowLeft, FileText, ImagePlus, Save, Search, Shield, Trash2, Upload, User } from 'lucide-react';
 
 interface SeoData {
   metaTitle: string;
@@ -15,6 +15,8 @@ interface SeoData {
 interface SettingsData {
   authorName: string;
   authorTitle: string;
+  authorBio: string;
+  authorImages: string[];
   profileImage: string;
   slogan: string;
   siteName: string;
@@ -35,6 +37,7 @@ export default function AdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingOg, setUploadingOg] = useState(false);
+  const [uploadingAPropos, setUploadingAPropos] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const defaultSeo: SeoData = {
     metaTitle: '',
@@ -46,6 +49,8 @@ export default function AdminSettingsPage() {
   const [form, setForm] = useState<SettingsData>({
     authorName: '',
     authorTitle: '',
+    authorBio: '',
+    authorImages: [],
     profileImage: '',
     slogan: '',
     siteName: '',
@@ -61,9 +66,11 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     fetch('/api/settings', { credentials: 'include', cache: 'no-store' })
       .then((res) => res.json())
-      .then((data) => setForm((prev) => ({
+        .then((data) => setForm((prev) => ({
         ...prev,
         ...data,
+        authorBio: data.authorBio ?? '',
+        authorImages: Array.isArray(data.authorImages) ? data.authorImages : [],
         seo: {
           metaTitle: '',
           metaDescription: '',
@@ -143,6 +150,58 @@ export default function AdminSettingsPage() {
       setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Erreur' });
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleUploadAPropos = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAPropos(true);
+    setMessage(null);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/settings/upload-a-propos', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur');
+      const newImages = [...(form.authorImages || []), data.url];
+      setForm((f) => ({ ...f, authorImages: newImages }));
+      const saveRes = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authorImages: newImages }),
+        credentials: 'include',
+      });
+      if (!saveRes.ok) throw new Error('Image uploadée mais erreur lors de l\'enregistrement');
+      setMessage({ type: 'success', text: 'Image ajoutée à la page À propos' });
+      window.dispatchEvent(new CustomEvent('refresh-settings'));
+    } catch (err) {
+      setMessage({ type: 'error', text: err instanceof Error ? err.message : 'Erreur' });
+    } finally {
+      setUploadingAPropos(false);
+      e.target.value = '';
+    }
+  };
+
+  const removeAProposImage = async (index: number) => {
+    const newImages = form.authorImages.filter((_, i) => i !== index);
+    setForm((f) => ({ ...f, authorImages: newImages }));
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ authorImages: newImages }),
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Erreur');
+      setMessage({ type: 'success', text: 'Image supprimée' });
+      window.dispatchEvent(new CustomEvent('refresh-settings'));
+    } catch {
+      setMessage({ type: 'error', text: 'Erreur lors de la suppression' });
     }
   };
 
@@ -288,6 +347,54 @@ export default function AdminSettingsPage() {
                     placeholder="Auteure & créatrice de contenu"
                     className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-3"
                   />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Texte À propos (sous le titre)</label>
+                  <textarea
+                    rows={4}
+                    value={form.authorBio}
+                    onChange={(e) => setForm((f) => ({ ...f, authorBio: e.target.value }))}
+                    placeholder="J'aime partager mes idées à travers la toile..."
+                    className="w-full rounded-xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-3"
+                  />
+                  <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+                    Texte affiché sur la page À propos, juste sous le titre (ex. bloggueuse)
+                  </p>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Images page À propos</label>
+                  <p className="mb-3 text-xs text-[var(--muted-foreground)]">
+                    Images affichées dans une galerie sur la page À propos
+                  </p>
+                  <div className="mb-3 flex flex-wrap gap-3">
+                    {(form.authorImages || []).map((url, i) => (
+                      <div key={url} className="relative group">
+                        <div className="h-20 w-20 overflow-hidden rounded-xl border-2 border-[var(--card-border)] bg-[var(--glass)]">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt="" className="h-full w-full object-cover" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeAProposImage(i)}
+                          className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600"
+                          aria-label="Supprimer"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <label className="flex w-fit cursor-pointer items-center gap-2 rounded-xl border border-[var(--card-border)] bg-[var(--background)] px-4 py-2 text-sm font-medium hover:bg-[var(--glass)]">
+                    <ImagePlus size={16} />
+                    {uploadingAPropos ? 'Upload...' : 'Ajouter une image'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleUploadAPropos}
+                      disabled={uploadingAPropos}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium">URL de l&apos;image (alternative)</label>

@@ -69,7 +69,7 @@ export function ArticleLayout({ article, related, categoryLabel, categoryLabels 
 
             <div className="mt-6 flex flex-wrap items-center gap-4 sm:mt-8">
               <Link
-                href="/auteur"
+                href="/a-propos"
                 className="flex items-center gap-3 rounded-xl border border-[var(--card-border)] bg-[var(--card)] px-4 py-3 transition-colors hover:border-[var(--accent)]/30"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--accent)]/20 font-bold text-[var(--accent)]">
@@ -77,7 +77,7 @@ export function ArticleLayout({ article, related, categoryLabel, categoryLabels 
                 </div>
                 <div>
                   <p className="font-semibold">{article.author}</p>
-                  <p className="text-sm text-[var(--muted-foreground)]">Auteur</p>
+                  <p className="text-sm text-[var(--muted-foreground)]">À propos</p>
                 </div>
               </Link>
             </div>

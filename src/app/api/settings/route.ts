@@ -43,7 +43,7 @@ export async function PUT(request: Request) {
     const settings = await saveSettings(updates as Parameters<typeof saveSettings>[0]);
     revalidatePath('/admin/settings');
     revalidatePath('/', 'layout');
-    revalidatePath('/auteur');
+    revalidatePath('/a-propos');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- exclude from response
     const { adminPasswordHash: _hash, ...publicSettings } = settings;
     return NextResponse.json(publicSettings);

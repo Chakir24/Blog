@@ -38,7 +38,7 @@ export function Hero() {
         transition={{ duration: 0.5 }}
         className="mb-8"
       >
-        <Link href="/auteur" className="block">
+        <Link href="/a-propos" className="block">
           <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-[var(--glass-border)] ring-4 ring-[var(--accent)]/20 md:h-28 md:w-28">
             {profileSrc && !imageError ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -110,6 +110,12 @@ export function Hero() {
             size={20}
             className="transition-transform group-hover:translate-x-1"
           />
+        </Link>
+        <Link
+          href="/a-propos"
+          className="flex items-center gap-2 rounded-xl border border-[var(--glass-border)] bg-[var(--glass)] px-8 py-4 font-semibold transition-all hover:border-[var(--accent)]/50 hover:bg-[var(--accent)]/10"
+        >
+          En savoir plus
         </Link>
         <Link
           href="/#contact"

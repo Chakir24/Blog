@@ -16,7 +16,7 @@ const SearchModal = dynamic(() => import('./SearchModal').then((m) => ({ default
 const navLinks = [
   { href: '/#articles', label: 'Articles' },
   { href: '/#expertise', label: 'Expertise' },
-  { href: '/auteur', label: 'Auteur' },
+  { href: '/a-propos', label: 'À propos' },
   { href: '/#contact', label: 'Contact' },
 ];
 

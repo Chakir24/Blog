@@ -211,6 +211,8 @@ export async function deleteCategory(id: string): Promise<void> {
 export interface Settings {
   authorName: string;
   authorTitle: string;
+  authorBio: string;
+  authorImages: string[];
   profileImage: string;
   slogan: string;
   siteName: string;
@@ -237,6 +239,9 @@ export interface Settings {
 const DEFAULT_SETTINGS: Settings = {
   authorName: 'Manftou Hath',
   authorTitle: 'Auteure & créatrice de contenu',
+  authorBio:
+    "J'aime partager mes idées à travers la toile. Ce blog est mon espace pour écrire sur ce qui me touche : réflexions de vie, créativité, petits bonheurs et tout ce qui m'inspire. Si vous êtes ici, merci de faire partie du voyage.",
+  authorImages: [],
   profileImage: '/profile.jpg',
   slogan: 'Réflexions · Créativité · Inspiration',
   siteName: 'Manftou Hath',

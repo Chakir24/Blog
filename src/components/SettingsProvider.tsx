@@ -5,6 +5,8 @@ import { createContext, useContext, useEffect, useState } from 'react';
 export interface PublicSettings {
   authorName: string;
   authorTitle: string;
+  authorBio: string;
+  authorImages: string[];
   profileImage: string;
   slogan: string;
   siteName: string;
@@ -21,6 +23,9 @@ export interface PublicSettings {
 const defaultSettings: PublicSettings = {
   authorName: 'Manftou Hath',
   authorTitle: 'Auteure & créatrice de contenu',
+  authorBio:
+    "J'aime partager mes idées à travers la toile. Ce blog est mon espace pour écrire sur ce qui me touche : réflexions de vie, créativité, petits bonheurs et tout ce qui m'inspire. Si vous êtes ici, merci de faire partie du voyage.",
+  authorImages: [],
   profileImage: '/profile.jpg',
   slogan: 'Réflexions · Créativité · Inspiration',
   siteName: 'Manftou Hath',

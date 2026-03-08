@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     "Qui se cache derrière ce blog ? Découvrez mon parcours et ce qui me pousse à partager mes idées sur le web.",
 };
 
-export default function AuteurLayout({
+export default function AProposLayout({
   children,
 }: {
   children: React.ReactNode;

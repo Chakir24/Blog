@@ -26,7 +26,7 @@ const interests = [
   { icon: Palette, label: 'Créativité', level: 'Exploration' },
 ];
 
-export default function AuteurPage() {
+export default function AProposPage() {
   const settings = useSettings();
   const initials = getInitials(settings.authorName || 'Manftou Hath');
   const socials = [
@@ -56,10 +56,8 @@ export default function AuteurPage() {
               {settings.authorTitle || 'Auteure & créatrice de contenu'}
             </p>
             <p className="mt-4 text-base leading-relaxed text-[var(--muted-foreground)] sm:mt-6 sm:text-lg">
-              J&apos;aime partager mes idées à travers la toile. Ce blog est mon
-              espace pour écrire sur ce qui me touche : réflexions de vie,
-              créativité, petits bonheurs et tout ce qui m&apos;inspire. Si vous
-              êtes ici, merci de faire partie du voyage.
+              {settings.authorBio ||
+                "J'aime partager mes idées à travers la toile. Ce blog est mon espace pour écrire sur ce qui me touche : réflexions de vie, créativité, petits bonheurs et tout ce qui m'inspire. Si vous êtes ici, merci de faire partie du voyage."}
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3 sm:mt-8 sm:gap-4 md:justify-start">
               {socials.map(({ icon: Icon, href, label }) => (
@@ -77,6 +75,32 @@ export default function AuteurPage() {
             </div>
           </div>
         </motion.div>
+
+        {(settings.authorImages?.length ?? 0) > 0 && (
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-16 sm:mt-24"
+          >
+            <h2 className="mb-6 font-serif text-xl font-bold sm:mb-8 sm:text-2xl">Galerie</h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-6">
+              {settings.authorImages.map((url) => (
+                <div
+                  key={url}
+                  className="aspect-square overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--card)]"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt=""
+                    className="h-full w-full object-cover transition-transform hover:scale-105"
+                  />
+                </div>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
         <motion.section
           initial={{ opacity: 0, y: 20 }}
