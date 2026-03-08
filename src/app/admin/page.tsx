@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { FileText, MessageCircle, Mail, ArrowRight, Tags, Settings } from 'lucide-react';
 import { getArticles, getComments, getSubscribers, getCategories } from '@/lib/storage';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboardPage() {
   const [articles, comments, subscribers, categories] = await Promise.all([
     getArticles(),

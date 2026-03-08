@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { getSubscribers, saveSubscribers } from '@/lib/storage';
+import { revalidatePath } from 'next/cache';
+import { getSubscribers, saveSubscribers, deleteSubscriber } from '@/lib/storage';
 import { checkRateLimit, getClientIdentifier } from '@/lib/rate-limit';
 import { validateEmail, checkContentLength } from '@/lib/validation';
 
@@ -46,8 +47,40 @@ export async function POST(request: Request) {
       subscribedAt: new Date().toISOString().split('T')[0],
     });
     await saveSubscribers(subscribers);
+    revalidatePath('/admin/newsletter');
+    revalidatePath('/admin');
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: 'Invalid data' }, { status: 400 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  const cookieStore = await cookies();
+  if (cookieStore.get('admin_session')?.value !== 'authenticated') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const email = typeof body?.email === 'string' ? body.email.trim() : '';
+    if (!email) {
+      return NextResponse.json({ error: 'Email requis' }, { status: 400 });
+    }
+
+    const subscribers = await getSubscribers();
+    if (!subscribers.some((s) => s.email === email)) {
+      return NextResponse.json({ error: 'Abonné introuvable' }, { status: 404 });
+    }
+
+    await deleteSubscriber(email);
+    revalidatePath('/admin/newsletter');
+    revalidatePath('/admin');
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Erreur serveur' },
+      { status: 500 }
+    );
   }
 }

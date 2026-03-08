@@ -1,4 +1,7 @@
 import { getSubscribers } from '@/lib/storage';
+import { SubscriberActions } from './SubscriberActions';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminNewsletterPage() {
   const subscribers = await getSubscribers();
@@ -21,6 +24,7 @@ export default async function AdminNewsletterPage() {
               <tr className="border-b border-[var(--glass-border)]">
                 <th className="px-6 py-4 text-left text-sm font-semibold">Email</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold">Date d&apos;inscription</th>
+                <th className="px-6 py-4 text-right text-sm font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -32,6 +36,9 @@ export default async function AdminNewsletterPage() {
                   <td className="px-6 py-4 font-medium">{sub.email}</td>
                   <td className="px-6 py-4 text-sm text-[var(--muted-foreground)]">
                     {new Date(sub.subscribedAt).toLocaleDateString('fr-FR')}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <SubscriberActions subscriber={sub} />
                   </td>
                 </tr>
               ))}

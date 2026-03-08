@@ -160,6 +160,14 @@ export async function saveSubscribers(subscribers: Subscriber[]): Promise<void> 
   }
 }
 
+export async function deleteSubscriber(email: string): Promise<void> {
+  const { error } = await supabase.from('subscribers').delete().eq('email', email);
+
+  if (error) {
+    throw new Error(`Erreur lors de la suppression de l'abonné : ${error.message}`);
+  }
+}
+
 // --- Categories ---
 
 export interface Category {
