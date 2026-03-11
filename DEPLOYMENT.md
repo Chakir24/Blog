@@ -89,3 +89,19 @@ Tu peux aussi déployer sur [Railway](https://railway.app). Supabase reste requi
 | `NEXT_PUBLIC_SITE_URL` | Recommandé | URL publique du site |
 | `RESEND_API_KEY` | Pour newsletter | Clé API Resend |
 | `NEWSLETTER_FROM_EMAIL` | Pour newsletter | Email expéditeur (ex: onboarding@resend.dev) |
+
+### Newsletter : configuration Resend
+
+Pour envoyer des notifications aux abonnés lors de la publication d’un article :
+
+1. Créez un compte sur [resend.com](https://resend.com)
+2. Récupérez votre clé API (Dashboard > API Keys)
+3. Ajoutez dans `.env.local` :
+   ```
+   RESEND_API_KEY=re_xxxxxxxxxxxx
+   NEWSLETTER_FROM_EMAIL=onboarding@resend.dev
+   ```
+4. En développement, `onboarding@resend.dev` permet d’envoyer uniquement à l’email de votre compte Resend
+5. En production, vérifiez votre domaine dans Resend pour envoyer à tous les abonnés
+
+Vérifiez la configuration via `/api/diagnostic` (connecté en admin).

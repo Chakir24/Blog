@@ -14,12 +14,16 @@ const SITE_URL =
 export async function sendArticleNotification(
   article: Article,
   subscriberEmails: string[]
-): Promise<{ success: number; failed: string[] }> {
+): Promise<{ success: number; failed: string[]; lastError?: string }> {
   const resend = getResend();
   if (!resend) {
-    throw new Error('RESEND_API_KEY is not configured');
+    throw new Error(
+      'Clé API Resend manquante. Ajoutez RESEND_API_KEY dans .env.local (créez un compte sur resend.com)'
+    );
   }
 
+  const fromEmail =
+    FROM_EMAIL.includes('<') ? FROM_EMAIL : `Manftou Hath <${FROM_EMAIL}>`;
   const articleUrl = `${SITE_URL}/articles/${article.slug}`;
   const subject = `Nouvel article : ${article.title}`;
 
@@ -51,24 +55,27 @@ export async function sendArticleNotification(
 
   const failed: string[] = [];
   let success = 0;
+  let lastError: string | undefined;
 
   for (const email of subscriberEmails) {
     try {
       const { error } = await resend!.emails.send({
-        from: FROM_EMAIL,
+        from: fromEmail,
         to: email,
         subject,
         html,
       });
       if (error) {
         failed.push(email);
+        lastError = typeof error === 'object' && error?.message ? String(error.message) : String(error);
       } else {
         success++;
       }
-    } catch {
+    } catch (err) {
       failed.push(email);
+      lastError = err instanceof Error ? err.message : String(err);
     }
   }
 
-  return { success, failed };
+  return { success, failed, lastError };
 }

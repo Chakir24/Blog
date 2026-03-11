@@ -33,7 +33,18 @@ export async function POST(request: Request) {
       });
     }
 
-    const { success, failed } = await sendArticleNotification(article, emails);
+    const { success, failed, lastError } = await sendArticleNotification(article, emails);
+
+    if (success === 0 && failed.length > 0 && lastError) {
+      return NextResponse.json(
+        {
+          error: `Échec de l'envoi : ${lastError}`,
+          success: 0,
+          failed,
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       message: `${success} notification(s) envoyée(s)`,

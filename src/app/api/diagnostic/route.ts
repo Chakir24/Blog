@@ -15,6 +15,8 @@ export async function GET() {
     NEXT_PUBLIC_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
     ADMIN_PASSWORD: !!process.env.ADMIN_PASSWORD,
+    RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+    NEWSLETTER_FROM_EMAIL: process.env.NEWSLETTER_FROM_EMAIL || 'onboarding@resend.dev',
     NODE_ENV: process.env.NODE_ENV,
   };
 
@@ -25,6 +27,15 @@ export async function GET() {
       ? 'Variables Supabase OK'
       : 'Variables manquantes (NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)',
     details: env,
+  };
+
+  // 1b. Newsletter / Resend
+  results.resend = {
+    ok: !!env.RESEND_API_KEY,
+    message: env.RESEND_API_KEY
+      ? `Resend configuré (from: ${env.NEWSLETTER_FROM_EMAIL})`
+      : 'RESEND_API_KEY manquant. Créez un compte sur resend.com et ajoutez la clé dans .env.local',
+    details: { hasKey: env.RESEND_API_KEY, fromEmail: env.NEWSLETTER_FROM_EMAIL },
   };
 
   // 2. Connexion Supabase (lecture)
@@ -98,6 +109,9 @@ export async function GET() {
         : null,
       supabase: !results.supabase?.ok
         ? 'Vérifiez le schéma SQL (supabase/schema.sql) et les clés Supabase.'
+        : null,
+      resend: !results.resend?.ok
+        ? 'Pour les notifications newsletter : créez un compte sur resend.com, récupérez la clé API, ajoutez RESEND_API_KEY et NEWSLETTER_FROM_EMAIL (ex: onboarding@resend.dev) dans .env.local'
         : null,
     },
   });
